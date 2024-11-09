@@ -1,0 +1,20 @@
+services:
+  awg:
+    image: karavan/awg:latest
+    container_name: awg
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    network_mode: host
+    volumes:
+      - /dev/net/tun:/dev/net/tun
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./conf:/opt/amnezia/awg:rw
+    environment:
+      - TZ=Europe/Moscow
+      - USER_UID=1000
+      - USER_GID=1000
+      - IFACE=awg0
+      - PORT=31444
+    restart: unless-stopped
