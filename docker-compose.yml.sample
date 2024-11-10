@@ -17,4 +17,5 @@ services:
       - USER_GID=1000
       - IFACE=awg0
       - PORT=31444
+      - ENTRYPOINT=<Domain or IP>
     restart: unless-stopped
