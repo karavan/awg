@@ -15,9 +15,9 @@ random_range() {
 
 if [ ! -f /opt/amnezia/awg/${IFACE}.conf ]; then
   PORT=${PORT:-51820}
-  NETWORK=${NETWORK:-"10.32.0.0/24"}
+  VPN_NETWORK=${VPN_NETWORK:-"10.32.0.0/24"}
   export $(ipcalc --prefix --minaddr ${NETWORK})
-  IP=${MINADDR}/${PREFIX}
+  IP_SRV=${MINADDR}/${PREFIX}
   PRIV_KEY=${PRIV_KEY:-$(wg genkey)}
   Jc=$(random_range)
   Jmin=$(random_range 12 64)
@@ -31,7 +31,7 @@ if [ ! -f /opt/amnezia/awg/${IFACE}.conf ]; then
 
   echo "[Interface]
     PrivateKey = ${PRIV_KEY}
-    Address = ${IP}
+    Address = ${IP_SRV}
     ListenPort = ${PORT}
     Jc = ${Jc}
     Jmin = ${Jmin}
@@ -43,4 +43,21 @@ if [ ! -f /opt/amnezia/awg/${IFACE}.conf ]; then
     H3 = ${H3}
     H4 = ${H4}
   " | sed -e 's/^\s\+//g' > /opt/amnezia/awg/${IFACE}.conf
+
+  echo "[Interface]
+    PrivateKey = <PRIV_KEY>
+    Endpoint = ${ADDR_SRV}:${PORT}
+    AllowedIPs = ${VPN_ROUTES:-"0.0.0.0/0"}
+    PersistentKeepalive = 30
+    Address = <IP>
+    Jc = ${Jc}
+    Jmin = ${Jmin}
+    Jmax = ${Jmax}
+    S1 = ${S1}
+    S2 = ${S2}
+    H1 = ${H1}
+    H2 = ${H2}
+    H3 = ${H3}
+    H4 = ${H4}
+  " | sed -e 's/^\s\+//g' > /opt/amnezia/awg/clients.tmpl
 fi
